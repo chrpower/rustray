@@ -1,24 +1,24 @@
 use crate::tuple::Tuple;
 
 #[derive(Debug)]
-struct Vector {
-    tuple: Tuple,
+pub struct Vector {
+    pub(crate) tuple: Tuple,
 }
 
 impl Vector {
     const VECTOR_W: f64 = 0.0;
-    fn new(x: f64, y: f64, z: f64) -> Vector {
+    pub fn new(x: f64, y: f64, z: f64) -> Vector {
         Vector {
             tuple: Tuple::new(x, y, z, Vector::VECTOR_W),
         }
     }
 
-    fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> f64 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
 
     #[allow(dead_code)]
-    fn normalize(&self) -> Vector {
+    pub fn normalize(&self) -> Vector {
         let magnitude = self.magnitude();
         Vector::new(
             self.x() / magnitude,
@@ -28,12 +28,12 @@ impl Vector {
     }
 
     #[allow(dead_code)]
-    fn dot(&self, other: &Vector) -> f64 {
+    pub fn dot(&self, other: &Vector) -> f64 {
         self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
     }
 
     #[allow(dead_code)]
-    fn cross(&self, other: &Vector) -> Vector {
+    pub fn cross(&self, other: &Vector) -> Vector {
         Vector::new(
             self.y() * other.z() - self.z() * other.y(),
             self.z() * other.x() - self.x() * other.z(),
@@ -41,15 +41,15 @@ impl Vector {
         )
     }
 
-    fn x(&self) -> f64 {
+    pub fn x(&self) -> f64 {
         self.tuple.x
     }
 
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.tuple.y
     }
 
-    fn z(&self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.tuple.z
     }
 }
