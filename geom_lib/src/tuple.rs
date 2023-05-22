@@ -1,13 +1,13 @@
 #[derive(Debug)]
-struct Tuple {
-    x: f64,
-    y: f64,
-    z: f64,
-    w: f64,
+pub(crate) struct Tuple {
+    pub(crate) x: f64,
+    pub(crate) y: f64,
+    pub(crate) z: f64,
+    pub(crate) w: f64,
 }
 
 impl Tuple {
-    fn new(x: f64, y: f64, z: f64, w: f64) -> Tuple {
+    pub(crate) fn new(x: f64, y: f64, z: f64, w: f64) -> Tuple {
         Tuple { x, y, z, w }
     }
 }
@@ -109,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    fn comparing_two_tuples_with_small_difference() {
+    fn comparing_two_tuples_with_a_small_difference() {
         let t1 = Tuple::new(1.0, 2.0, 3.0, 4.0);
         let t2 = Tuple::new(1.0, 2.0, 3.0, 4.000001);
         assert_eq!(t1, t2);
