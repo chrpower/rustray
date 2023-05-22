@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 geom_lib = { path = "../geom_lib" }
-canvas_lib = { path = "../canvas_lib" }
+draw_lib = { path = "../draw_lib" }

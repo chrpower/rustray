@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "geom_lib",
-    "canvas_lib",
+    "draw_lib",
     "ray_simulator",
 ]
 
