@@ -1,6 +1,6 @@
 use crate::tuple::Tuple;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Colour {
     tuple: Tuple,
 }

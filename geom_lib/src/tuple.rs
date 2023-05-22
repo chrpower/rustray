@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Tuple {
     pub(crate) x: f64,
     pub(crate) y: f64,
