@@ -148,52 +148,45 @@ mod tests {
     fn adding_two_vectors() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
-        let v3 = &v1 + &v2;
-        assert_eq!(v3, Vector::new(3.0, 5.0, 7.0));
+        assert_eq!(&v1 + &v2, Vector::new(3.0, 5.0, 7.0));
     }
 
     #[test]
     fn subtracting_two_vectors() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
-        let v3 = &v1 - &v2;
-        assert_eq!(v3, Vector::new(-1.0, -1.0, -1.0));
+        assert_eq!(&v1 - &v2, Vector::new(-1.0, -1.0, -1.0));
     }
 
     #[test]
     fn subtracting_a_vector_from_the_zero_vector() {
         let zero = Vector::new(0.0, 0.0, 0.0);
         let v = Vector::new(1.0, -2.0, 3.0);
-        let v2 = &zero - &v;
-        assert_eq!(v2, Vector::new(-1.0, 2.0, -3.0));
+        assert_eq!(&zero - &v, Vector::new(-1.0, 2.0, -3.0));
     }
 
     #[test]
     fn negating_a_vector() {
         let v = Vector::new(1.0, -2.0, 3.0);
-        let v2 = -&v;
-        assert_eq!(v2, Vector::new(-1.0, 2.0, -3.0));
+        assert_eq!(-&v, Vector::new(-1.0, 2.0, -3.0));
     }
 
     #[test]
     fn multiplying_a_vector_by_a_scalar() {
         let v = Vector::new(1.0, 2.0, 3.0);
-        let v2 = &v * 3.5;
-        assert_eq!(v2, Vector::new(3.5, 7.0, 10.5));
+        assert_eq!(&v * 3.5, Vector::new(3.5, 7.0, 10.5));
     }
 
     #[test]
     fn multiplying_a_vector_by_a_fraction() {
         let v = Vector::new(1.0, 2.0, 3.0);
-        let v2 = &v * 0.5;
-        assert_eq!(v2, Vector::new(0.5, 1.0, 1.5));
+        assert_eq!(&v * 0.5, Vector::new(0.5, 1.0, 1.5));
     }
 
     #[test]
     fn dividing_a_vector_by_a_scalar() {
         let v = Vector::new(1.0, 2.0, 3.0);
-        let v2 = &v / 2.0;
-        assert_eq!(v2, Vector::new(0.5, 1.0, 1.5));
+        assert_eq!(&v / 2.0, Vector::new(0.5, 1.0, 1.5));
     }
 
     #[test]
@@ -235,8 +228,7 @@ mod tests {
     #[test]
     fn magnitude_of_a_normalized_vector() {
         let v = Vector::new(1.0, 2.0, 3.0);
-        let norm = v.normalize();
-        assert_eq!(norm.magnitude(), 1.0);
+        assert_eq!(v.normalize().magnitude(), 1.0);
     }
 
     #[test]

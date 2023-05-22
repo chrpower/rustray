@@ -104,23 +104,20 @@ mod tests {
     fn adding_a_vector_to_a_point_gives_a_point() {
         let p1 = Point::new(1.0, 2.0, 3.0);
         let v = Vector::new(2.0, 3.0, 4.0);
-        let p2 = &p1 + &v;
-        assert_eq!(p2, Point::new(3.0, 5.0, 7.0));
+        assert_eq!(&p1 + &v, Point::new(3.0, 5.0, 7.0));
     }
 
     #[test]
     fn subtracting_two_points_gives_a_vector() {
         let p1 = Point::new(1.0, 2.0, 3.0);
         let p2 = Point::new(2.0, 3.0, 4.0);
-        let v = &p1 - &p2;
-        assert_eq!(v, Vector::new(-1.0, -1.0, -1.0));
+        assert_eq!(&p1 - &p2, Vector::new(-1.0, -1.0, -1.0));
     }
 
     #[test]
     fn subtracting_a_vector_from_a_point_gives_a_point() {
         let p1 = Point::new(1.0, 2.0, 3.0);
         let v = Vector::new(2.0, 3.0, 4.0);
-        let p2 = &p1 - &v;
-        assert_eq!(p2, Point::new(-1.0, -1.0, -1.0));
+        assert_eq!(&p1 - &v, Point::new(-1.0, -1.0, -1.0));
     }
 }
