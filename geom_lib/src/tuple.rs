@@ -74,6 +74,19 @@ impl<'a> Mul<f64> for &'a Tuple {
     }
 }
 
+impl<'a, 'b> Mul<&'b Tuple> for &'a Tuple {
+    type Output = Tuple;
+
+    fn mul(self, other: &'b Tuple) -> Tuple {
+        Tuple::new(
+            self.x * other.x,
+            self.y * other.y,
+            self.z * other.z,
+            self.w * other.w,
+        )
+    }
+}
+
 use std::ops::Div;
 impl<'a> Div<f64> for &'a Tuple {
     type Output = Tuple;
@@ -152,6 +165,13 @@ mod tests {
     fn multiplying_a_tuple_by_a_fraction() {
         let t1 = Tuple::new(1.0, 2.0, 3.0, 4.0);
         assert_eq!(&t1 * 0.5, Tuple::new(0.5, 1.0, 1.5, 2.0));
+    }
+
+    #[test]
+    fn multiplying_two_tuples() {
+        let t1 = Tuple::new(1.0, 2.0, 3.0, 4.0);
+        let t2 = Tuple::new(2.0, 3.0, 4.0, 5.0);
+        assert_eq!(&t1 * &t2, Tuple::new(2.0, 6.0, 12.0, 20.0));
     }
 
     #[test]
