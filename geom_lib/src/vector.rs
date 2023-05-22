@@ -17,7 +17,6 @@ impl Vector {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
 
-    #[allow(dead_code)]
     pub fn normalize(&self) -> Vector {
         let magnitude = self.magnitude();
         Vector::new(

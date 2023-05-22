@@ -15,12 +15,10 @@ impl Point {
         }
     }
 
-    #[allow(dead_code)]
     pub fn x(&self) -> f64 {
         self.tuple.x
     }
 
-    #[allow(dead_code)]
     pub fn y(&self) -> f64 {
         self.tuple.y
     }
