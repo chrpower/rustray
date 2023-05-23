@@ -7,8 +7,8 @@ pub struct Canvas {
     pixels: Vec<Colour>,
 }
 
+#[allow(dead_code)]
 impl Canvas {
-    #[allow(dead_code)]
     pub fn new(width: usize, height: usize) -> Canvas {
         Canvas {
             width,
@@ -17,17 +17,14 @@ impl Canvas {
         }
     }
 
-    #[allow(dead_code)]
     pub fn width(&self) -> usize {
         self.width
     }
 
-    #[allow(dead_code)]
     pub fn height(&self) -> usize {
         self.height
     }
 
-    #[allow(dead_code)]
     pub fn write_pixel(&mut self, x: usize, y: usize, colour: Colour) -> Result<(), String> {
         if x < self.width && y < self.height {
             self.pixels[y * self.width + x] = colour;
@@ -41,7 +38,6 @@ impl Canvas {
         }
     }
 
-    #[allow(dead_code)]
     pub fn pixel_at(&self, x: usize, y: usize) -> Result<&Colour, String> {
         if x < self.width && y < self.height {
             Ok(&self.pixels[y * self.width + x])
