@@ -1,4 +1,5 @@
 mod canvas;
+mod file_helper;
 mod ppm_wrapper;
 
 pub fn add(left: usize, right: usize) -> usize {

@@ -111,9 +111,8 @@ mod tests {
         canvas.write_pixel(0, 0, c1).unwrap();
         canvas.write_pixel(2, 1, c2).unwrap();
         canvas.write_pixel(4, 2, c3).unwrap();
-        let ppm_wrapper = PpmWrapper::new(canvas, 255);
         assert_eq!(
-            ppm_wrapper.generate_body(),
+            PpmWrapper::new(canvas, 255).generate_body(),
             "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
              0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n\
              0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n"
@@ -136,8 +135,14 @@ mod tests {
     #[test]
     fn ppm_files_are_terminated_by_a_newline_character() {
         let canvas = Canvas::new(5, 3);
-        let ppm_wrapper = PpmWrapper::new(canvas, 255);
-        assert_eq!(ppm_wrapper.generate_body().chars().last().unwrap(), '\n');
+        assert_eq!(
+            PpmWrapper::new(canvas, 255)
+                .generate_body()
+                .chars()
+                .last()
+                .unwrap(),
+            '\n'
+        );
     }
 
     #[test]
