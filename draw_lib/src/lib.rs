@@ -2,17 +2,6 @@ mod canvas;
 mod file_helper;
 mod ppm_wrapper;
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use crate::canvas::Canvas;
+pub use crate::file_helper::save_ppm_to_file;
+pub use crate::ppm_wrapper::PpmWrapper;
