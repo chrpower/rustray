@@ -8,7 +8,6 @@ pub struct Point {
 
 impl Point {
     const POINT_W: f64 = 1.0;
-    #[allow(dead_code)]
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point {
             tuple: Tuple::new(x, y, z, Point::POINT_W),
@@ -67,8 +66,8 @@ impl<'a, 'b> Sub<&'b Vector> for &'a Point {
 
 #[cfg(test)]
 mod tests {
-    use crate::point::Point;
-    use crate::vector::Vector;
+    use crate::Point;
+    use crate::Vector;
 
     #[test]
     fn creating_a_point_with_w_1() {

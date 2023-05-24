@@ -1,13 +1,11 @@
 use geom_lib::Colour;
 
-#[allow(dead_code)]
 pub struct Canvas {
     width: usize,
     height: usize,
     pixels: Vec<Colour>,
 }
 
-#[allow(dead_code)]
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
         Canvas {
@@ -53,8 +51,8 @@ impl Canvas {
 
 #[cfg(test)]
 mod tests {
-    use crate::canvas::Canvas;
-    use crate::canvas::Colour;
+    use crate::Canvas;
+    use geom_lib::Colour;
 
     #[test]
     fn write_and_read_valid_pixel() {

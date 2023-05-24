@@ -13,6 +13,18 @@ impl Vector {
         }
     }
 
+    pub fn x(&self) -> f64 {
+        self.tuple.x
+    }
+
+    pub fn y(&self) -> f64 {
+        self.tuple.y
+    }
+
+    pub fn z(&self) -> f64 {
+        self.tuple.z
+    }
+
     pub fn magnitude(&self) -> f64 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
@@ -38,18 +50,6 @@ impl Vector {
             self.z() * other.x() - self.x() * other.z(),
             self.x() * other.y() - self.y() * other.x(),
         )
-    }
-
-    pub fn x(&self) -> f64 {
-        self.tuple.x
-    }
-
-    pub fn y(&self) -> f64 {
-        self.tuple.y
-    }
-
-    pub fn z(&self) -> f64 {
-        self.tuple.z
     }
 }
 
@@ -112,8 +112,8 @@ impl<'a> Div<f64> for &'a Vector {
 
 #[cfg(test)]
 mod tests {
+    use crate::Vector;
 
-    use crate::vector::Vector;
     #[test]
     fn creating_a_vector_with_w_0() {
         let v = Vector::new(1.0, 2.0, 3.0);

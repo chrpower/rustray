@@ -17,7 +17,6 @@ impl Writable for std::fs::File {
     }
 }
 
-#[allow(dead_code)]
 fn generate_default_filename(p: &PpmWrapper) -> String {
     use chrono::Local;
     format!(
@@ -28,8 +27,7 @@ fn generate_default_filename(p: &PpmWrapper) -> String {
     )
 }
 
-#[allow(dead_code)]
-pub fn save_ppm_to_file<W: Writable>(
+pub fn write_ppm<W: Writable>(
     ppm_wrapper: &PpmWrapper,
     filename: Option<String>,
 ) -> io::Result<()> {
@@ -45,8 +43,9 @@ pub fn save_ppm_to_file<W: Writable>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::canvas::Canvas;
-    use crate::ppm_wrapper::PpmWrapper;
+    use crate::Canvas;
+    use crate::PpmWrapper;
+    use std::io;
 
     struct MockWritable {
         buffer: Vec<u8>,
@@ -71,9 +70,9 @@ mod tests {
     }
 
     #[test]
-    fn test_save_ppm_to_file() {
+    fn write_ppm_to_mock() {
         let ppm_wrapper = PpmWrapper::new(Canvas::new(10, 10), 255);
         let filename = Some("test.ppm".to_string());
-        assert!(save_ppm_to_file::<MockWritable>(&ppm_wrapper, filename).is_ok());
+        assert!(write_ppm::<MockWritable>(&ppm_wrapper, filename).is_ok());
     }
 }

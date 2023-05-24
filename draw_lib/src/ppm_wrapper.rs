@@ -1,11 +1,9 @@
 use crate::canvas::Canvas;
 
-#[allow(dead_code)]
 pub struct PpmWrapper {
     canvas: Canvas,
     max_colour_value: usize,
 }
-#[allow(dead_code)]
 impl PpmWrapper {
     pub fn new(canvas: Canvas, max_colour_value: usize) -> PpmWrapper {
         PpmWrapper {
@@ -70,10 +68,10 @@ fn pop_trailing_space(line: &mut String) {
     }
 }
 
-fn add_to_line_or_body(output: &mut String, line: &mut String, value: usize) {
+fn add_to_line_or_body(body: &mut String, line: &mut String, value: usize) {
     if line.len() + value.to_string().len() > 70 {
         pop_trailing_space(line);
-        output.push_str(&format!("{}\n", line));
+        body.push_str(&format!("{}\n", line));
         line.clear();
     }
 
@@ -82,9 +80,8 @@ fn add_to_line_or_body(output: &mut String, line: &mut String, value: usize) {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::canvas::Canvas;
     use crate::ppm_wrapper::{scale_colour_value, PpmWrapper};
+    use crate::Canvas;
     use geom_lib::Colour;
 
     fn fill_canvas_with_colour(canvas: &mut Canvas, colour: Colour) {

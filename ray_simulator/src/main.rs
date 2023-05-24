@@ -1,4 +1,4 @@
-use draw_lib::{save_ppm_to_file, Canvas, PpmWrapper};
+use draw_lib::{write_ppm, Canvas, PpmWrapper};
 use geom_lib::{Colour, Point, Vector};
 
 struct Projectile {
@@ -50,5 +50,5 @@ fn main() {
     }
 
     let ppm_wrapper = PpmWrapper::new(canvas, 255);
-    save_ppm_to_file::<std::fs::File>(&ppm_wrapper, None).unwrap();
+    write_ppm::<std::fs::File>(&ppm_wrapper, None).unwrap();
 }

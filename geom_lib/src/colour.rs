@@ -73,8 +73,7 @@ impl<'a, 'b> Mul<&'b Colour> for &'a Colour {
 
 #[cfg(test)]
 mod test {
-
-    use crate::colour::Colour;
+    use crate::Colour;
 
     #[test]
     fn creating_a_colour() {
