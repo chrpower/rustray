@@ -248,6 +248,48 @@ impl<'a, 'b, const N: usize> Mul<&'b SquareMatrix<N>> for &'a SquareMatrix<N> {
     }
 }
 
+use crate::Point;
+impl<'a, 'b> Mul<&'b Point> for &'a SquareMatrix<4> {
+    type Output = Point;
+
+    fn mul(self, other: &'b Point) -> Point {
+        let x = self[0][0] * other.x()
+            + self[0][1] * other.y()
+            + self[0][2] * other.z()
+            + self[0][3] * other.w();
+        let y = self[1][0] * other.x()
+            + self[1][1] * other.y()
+            + self[1][2] * other.z()
+            + self[1][3] * other.w();
+        let z = self[2][0] * other.x()
+            + self[2][1] * other.y()
+            + self[2][2] * other.z()
+            + self[2][3] * other.w();
+        Point::new(x, y, z)
+    }
+}
+
+use crate::Vector;
+impl<'a, 'b> Mul<&'b Vector> for &'a SquareMatrix<4> {
+    type Output = Vector;
+
+    fn mul(self, other: &'b Vector) -> Vector {
+        let x = self[0][0] * other.x()
+            + self[0][1] * other.y()
+            + self[0][2] * other.z()
+            + self[0][3] * other.w();
+        let y = self[1][0] * other.x()
+            + self[1][1] * other.y()
+            + self[1][2] * other.z()
+            + self[1][3] * other.w();
+        let z = self[2][0] * other.x()
+            + self[2][1] * other.y()
+            + self[2][2] * other.z()
+            + self[2][3] * other.w();
+        Vector::new(x, y, z)
+    }
+}
+
 #[cfg(test)]
 mod test {
 

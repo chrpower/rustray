@@ -3,7 +3,7 @@ use crate::vector::Vector;
 
 #[derive(Debug)]
 pub struct Point {
-    tuple: Tuple,
+    pub(crate) tuple: Tuple,
 }
 
 impl Point {
@@ -22,9 +22,12 @@ impl Point {
         self.tuple.y
     }
 
-    #[allow(dead_code)]
     pub fn z(&self) -> f64 {
         self.tuple.z
+    }
+
+    pub(crate) fn w(&self) -> f64 {
+        self.tuple.w
     }
 }
 

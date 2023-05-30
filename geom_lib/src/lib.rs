@@ -1,6 +1,7 @@
 mod colour;
 mod matrix;
 mod point;
+mod translation;
 mod tuple;
 mod vector;
 

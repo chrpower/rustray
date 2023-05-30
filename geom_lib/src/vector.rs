@@ -25,6 +25,10 @@ impl Vector {
         self.tuple.z
     }
 
+    pub(crate) fn w(&self) -> f64 {
+        self.tuple.w
+    }
+
     pub fn magnitude(&self) -> f64 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
