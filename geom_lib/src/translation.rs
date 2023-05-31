@@ -1,6 +1,5 @@
 use crate::SquareMatrix;
 
-#[allow(dead_code)]
 pub fn translation(x: f64, y: f64, z: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[0][3] = x;
@@ -9,7 +8,6 @@ pub fn translation(x: f64, y: f64, z: f64) -> SquareMatrix<4> {
     matrix
 }
 
-#[allow(dead_code)]
 pub fn scaling(x: f64, y: f64, z: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[0][0] = x;
@@ -18,7 +16,6 @@ pub fn scaling(x: f64, y: f64, z: f64) -> SquareMatrix<4> {
     matrix
 }
 
-#[allow(dead_code)]
 pub fn rotation_x(radians: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[1][1] = radians.cos();
@@ -28,7 +25,6 @@ pub fn rotation_x(radians: f64) -> SquareMatrix<4> {
     matrix
 }
 
-#[allow(dead_code)]
 pub fn rotation_y(radians: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[0][0] = radians.cos();
@@ -38,7 +34,6 @@ pub fn rotation_y(radians: f64) -> SquareMatrix<4> {
     matrix
 }
 
-#[allow(dead_code)]
 pub fn rotation_z(radians: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[0][0] = radians.cos();
@@ -48,7 +43,6 @@ pub fn rotation_z(radians: f64) -> SquareMatrix<4> {
     matrix
 }
 
-#[allow(dead_code)]
 pub fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> SquareMatrix<4> {
     let mut matrix = SquareMatrix::identity();
     matrix[0][1] = xy;
