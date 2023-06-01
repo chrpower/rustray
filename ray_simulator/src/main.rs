@@ -1,10 +1,13 @@
 use draw_lib::{write_ppm, Canvas, PpmWrapper};
-use geom_lib::{scaling, translation, Colour, Point, Ray, Sphere, SquareMatrix, Vector};
+use geom_lib::{
+    scaling, translation, Colour, Material, Point, PointLight, Ray, Sphere, SquareMatrix, Vector,
+};
 
 fn main() {
     plot_projectile();
     plot_clock();
     ray_cast_sphere();
+    ray_cast_sphere_with_material()
 }
 
 fn plot_clock() {
@@ -123,6 +126,49 @@ pub fn ray_cast_sphere() {
             let ray = Ray::new(ray_origin.clone(), (&position - &ray_origin).normalize());
             if sphere.intersect(&ray).hit().is_some() {
                 canvas.write_pixel(x, y, colour.clone()).unwrap();
+            }
+        }
+    }
+
+    let ppm_wrapper = PpmWrapper::new(canvas, 255);
+    if let Err(e) = write_ppm::<std::fs::File>(&ppm_wrapper, None) {
+        eprintln!("Failed to write PPM file: {}", e);
+    }
+}
+
+pub fn ray_cast_sphere_with_material() {
+    let ray_origin = Point::new(0.0, 0.0, -5.0);
+    let wall_z = 10.0;
+    let wall_size = 7.0;
+
+    let canvas_pixels = 1000;
+    let pixel_size = wall_size / canvas_pixels as f64;
+    let half = wall_size / 2.0;
+
+    let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
+
+    let sphere = Sphere::new(None, Some(Material::new(Colour::new(1.0, 0.2, 1.0))));
+    let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), Colour::new(1.0, 1.0, 1.0));
+
+    for y in 0..canvas_pixels {
+        let world_y = half - pixel_size * y as f64;
+        for x in 0..canvas_pixels {
+            let world_x = -half + pixel_size * x as f64;
+            let position = Point::new(world_x, world_y, wall_z);
+
+            let ray = Ray::new(ray_origin.clone(), (&position - &ray_origin).normalize());
+            if let Some(intersection) = sphere.intersect(&ray).hit() {
+                let intersected_shape = intersection.object();
+
+                let point = ray.position(intersection.t());
+                let normal = intersected_shape.normal_at(&point);
+                let eye = -ray.direction();
+
+                let colour =
+                    intersected_shape
+                        .material()
+                        .lighting(light.clone(), point, eye, normal);
+                canvas.write_pixel(x, y, colour).unwrap();
             }
         }
     }

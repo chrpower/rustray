@@ -54,6 +54,10 @@ impl Vector {
             self.x() * other.y() - self.y() * other.x(),
         )
     }
+
+    pub fn reflect(&self, normal: &Vector) -> Vector {
+        self - &(&(normal * 2.0) * self.dot(normal))
+    }
 }
 
 use std::cmp::PartialEq;
@@ -247,5 +251,21 @@ mod tests {
         let v2 = Vector::new(2.0, 3.0, 4.0);
         assert_eq!(v1.cross(&v2), Vector::new(-1.0, 2.0, -1.0));
         assert_eq!(v2.cross(&v1), Vector::new(1.0, -2.0, 1.0));
+    }
+
+    #[test]
+    fn reflecting_a_vector_approaching_at_45_degrees() {
+        let v = Vector::new(1.0, -1.0, 0.0);
+        let n = Vector::new(0.0, 1.0, 0.0);
+        let r = v.reflect(&n);
+        assert_eq!(r, Vector::new(1.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn reflecting_a_vector_off_a_slanted_surface() {
+        let v = Vector::new(0.0, -1.0, 0.0);
+        let n = Vector::new(2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0, 0.0);
+        let r = v.reflect(&n);
+        assert_eq!(r, Vector::new(1.0, 0.0, 0.0));
     }
 }
