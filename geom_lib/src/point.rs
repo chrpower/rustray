@@ -1,7 +1,7 @@
 use crate::tuple::Tuple;
 use crate::vector::Vector;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point {
     pub(crate) tuple: Tuple,
 }
@@ -28,6 +28,10 @@ impl Point {
 
     pub(crate) fn w(&self) -> f64 {
         self.tuple.w
+    }
+
+    pub fn origin() -> Point {
+        Point::new(0.0, 0.0, 0.0)
     }
 }
 
@@ -79,6 +83,15 @@ mod tests {
         assert_eq!(p.y(), 2.0);
         assert_eq!(p.z(), 3.0);
         assert_eq!(p.tuple.w, Point::POINT_W);
+    }
+
+    #[test]
+    fn creating_origin_point() {
+        let p = Point::origin();
+        assert_eq!(p.x(), 0.0);
+        assert_eq!(p.y(), 0.0);
+        assert_eq!(p.z(), 0.0);
+        assert_eq!(p.w(), Point::POINT_W);
     }
 
     #[test]

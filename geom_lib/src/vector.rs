@@ -1,6 +1,6 @@
 use crate::tuple::Tuple;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vector {
     pub(crate) tuple: Tuple,
 }
@@ -42,7 +42,6 @@ impl Vector {
         )
     }
 
-    #[allow(dead_code)]
     pub fn dot(&self, other: &Vector) -> f64 {
         self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
     }

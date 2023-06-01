@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct SquareMatrix<const N: usize> {
     data: [[f64; N]; N],
 }
