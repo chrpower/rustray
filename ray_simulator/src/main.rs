@@ -1,7 +1,7 @@
+use core::{Colour, Point, Vector};
+
 use draw_lib::{write_ppm, Canvas, PpmWrapper};
-use geom_lib::{
-    scaling, translation, Colour, Material, Point, PointLight, Ray, Sphere, SquareMatrix, Vector,
-};
+use geom_lib::{scaling, translation, Material, PointLight, Ray, Sphere, SquareMatrix};
 
 fn main() {
     plot_projectile();
@@ -123,9 +123,9 @@ pub fn ray_cast_sphere() {
             let world_x = -half + pixel_size * x as f64;
             let position = Point::new(world_x, world_y, wall_z);
 
-            let ray = Ray::new(ray_origin.clone(), (&position - &ray_origin).normalize());
+            let ray = Ray::new(ray_origin, (&position - &ray_origin).normalize());
             if sphere.intersect(&ray).hit().is_some() {
-                canvas.write_pixel(x, y, colour.clone()).unwrap();
+                canvas.write_pixel(x, y, colour).unwrap();
             }
         }
     }
@@ -156,7 +156,7 @@ pub fn ray_cast_sphere_with_material() {
             let world_x = -half + pixel_size * x as f64;
             let position = Point::new(world_x, world_y, wall_z);
 
-            let ray = Ray::new(ray_origin.clone(), (&position - &ray_origin).normalize());
+            let ray = Ray::new(ray_origin, (&position - &ray_origin).normalize());
             if let Some(intersection) = sphere.intersect(&ray).hit() {
                 let intersected_shape = intersection.object();
 

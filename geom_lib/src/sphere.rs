@@ -1,6 +1,4 @@
-use crate::{
-    util::random_usize, Intersection, Intersections, Material, Point, Ray, SquareMatrix, Vector,
-};
+use crate::{util::random_usize, Intersection, Intersections, Material, Ray, SquareMatrix};
 
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
@@ -71,6 +69,7 @@ impl Default for Sphere {
     }
 }
 
+use core::{Point, Vector};
 use std::fmt::Debug;
 pub trait Shape: Debug {
     fn id(&self) -> &usize;
@@ -94,16 +93,17 @@ impl Shape for Sphere {
 
 #[cfg(test)]
 mod test {
+    use core::Colour;
+    use core::Point;
+    use core::Vector;
+
     use crate::rotation_z;
     use crate::scaling;
     use crate::sphere::sphere_intersections;
     use crate::translation;
-    use crate::Colour;
     use crate::Material;
-    use crate::Point;
     use crate::Ray;
     use crate::Sphere;
-    use crate::Vector;
 
     #[test]
     fn changing_a_spheres_transformation() {

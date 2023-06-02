@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "core",
     "geom_lib",
     "draw_lib",
     "ray_simulator",

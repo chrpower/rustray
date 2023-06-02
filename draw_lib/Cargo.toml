@@ -6,5 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+core = { path = "../core" }
 geom_lib = { path = "../geom_lib" }
 chrono = "0.4"

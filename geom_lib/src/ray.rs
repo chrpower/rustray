@@ -1,6 +1,6 @@
-use crate::Point;
 use crate::SquareMatrix;
-use crate::Vector;
+use core::Point;
+use core::Vector;
 
 #[derive(Debug)]
 pub struct Ray {
@@ -37,9 +37,9 @@ mod test {
 
     use crate::scaling;
     use crate::translation;
-    use crate::Point;
     use crate::Ray;
-    use crate::Vector;
+    use core::Point;
+    use core::Vector;
 
     #[test]
     fn create_and_query_ray() {

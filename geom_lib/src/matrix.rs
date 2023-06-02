@@ -248,7 +248,7 @@ impl<'a, 'b, const N: usize> Mul<&'b SquareMatrix<N>> for &'a SquareMatrix<N> {
     }
 }
 
-use crate::Point;
+use core::Point;
 impl<'a, 'b> Mul<&'b Point> for &'a SquareMatrix<4> {
     type Output = Point;
 
@@ -269,7 +269,7 @@ impl<'a, 'b> Mul<&'b Point> for &'a SquareMatrix<4> {
     }
 }
 
-use crate::Vector;
+use core::Vector;
 impl<'a, 'b> Mul<&'b Vector> for &'a SquareMatrix<4> {
     type Output = Vector;
 

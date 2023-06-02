@@ -1,4 +1,4 @@
-use geom_lib::Colour;
+use core::Colour;
 
 pub struct Canvas {
     width: usize,
@@ -52,7 +52,7 @@ impl Canvas {
 #[cfg(test)]
 mod tests {
     use crate::Canvas;
-    use geom_lib::Colour;
+    use core::Colour;
 
     #[test]
     fn write_and_read_valid_pixel() {

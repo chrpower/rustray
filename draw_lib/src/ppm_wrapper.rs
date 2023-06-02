@@ -82,7 +82,7 @@ fn add_to_line_or_body(body: &mut String, line: &mut String, value: usize) {
 mod tests {
     use crate::ppm_wrapper::{scale_colour_value, PpmWrapper};
     use crate::Canvas;
-    use geom_lib::Colour;
+    use core::Colour;
 
     fn fill_canvas_with_colour(canvas: &mut Canvas, colour: Colour) {
         for y in 0..canvas.height() {

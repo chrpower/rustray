@@ -57,7 +57,7 @@ pub fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> SquareM
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{Point, Vector};
+    use core::{Point, Vector};
 
     #[test]
     fn test_translation() {

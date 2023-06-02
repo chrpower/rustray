@@ -1,5 +1,5 @@
-use crate::{Colour, Point};
-
+use core::Colour;
+use core::Point;
 #[derive(Debug, Clone)]
 pub struct PointLight {
     pub(crate) position: Point,
@@ -25,9 +25,9 @@ impl PointLight {
 
 #[cfg(test)]
 mod test {
-    use crate::Colour;
-    use crate::Point;
     use crate::PointLight;
+    use core::Colour;
+    use core::Point;
 
     #[test]
     fn a_point_light_has_a_position_and_intensity() {
