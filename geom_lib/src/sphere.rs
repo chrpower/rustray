@@ -1,18 +1,20 @@
-use crate::{util::random_usize, Intersection, Intersections, Material, Ray, SquareMatrix};
+use math::{Matrix4, Ray};
+
+use crate::{util::random_usize, Intersection, Intersections, Material};
 
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
     pub id: usize,
-    pub transform: SquareMatrix<4>,
+    pub transform: Matrix4,
     pub material: Material,
 }
 
 #[allow(dead_code)]
 impl Sphere {
-    pub fn new(transform: Option<SquareMatrix<4>>, material: Option<Material>) -> Self {
+    pub fn new(transform: Option<Matrix4>, material: Option<Material>) -> Self {
         Self {
             id: random_usize(),
-            transform: transform.unwrap_or(SquareMatrix::identity()),
+            transform: transform.unwrap_or(Matrix4::identity()),
             material: material.unwrap_or(Material::default()),
         }
     }
@@ -30,7 +32,7 @@ impl Sphere {
         self
     }
 
-    pub fn transform(&self) -> &SquareMatrix<4> {
+    pub fn transform(&self) -> &Matrix4 {
         &self.transform
     }
 
@@ -97,17 +99,15 @@ mod test {
     use core::Point;
     use core::Vector;
 
-    use crate::rotation_z;
-    use crate::scaling;
     use crate::sphere::sphere_intersections;
-    use crate::translation;
     use crate::Material;
-    use crate::Ray;
     use crate::Sphere;
+    use math::Ray;
+    use math::Transform;
 
     #[test]
     fn changing_a_spheres_transformation() {
-        let t = translation(2.0, 3.0, 4.0);
+        let t = Transform::default().translation(2.0, 3.0, 4.0).build();
         let s = Sphere::new(Some(t.clone()), None);
 
         assert_eq!(s.transform(), &t);
@@ -116,7 +116,10 @@ mod test {
     #[test]
     fn intersecting_a_scaled_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::new(Some(scaling(2.0, 2.0, 2.0)), None);
+        let s = Sphere::new(
+            Some(Transform::default().scaling(2.0, 2.0, 2.0).build()),
+            None,
+        );
 
         let xs = s.intersect(&r);
 
@@ -128,7 +131,10 @@ mod test {
     #[test]
     fn intersecting_a_translated_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::new(Some(translation(5.0, 0.0, 0.0)), None);
+        let s = Sphere::new(
+            Some(Transform::default().translation(5.0, 0.0, 0.0).build()),
+            None,
+        );
 
         let xs = s.intersect(&r);
         assert_eq!(xs.count(), 0);
@@ -248,7 +254,10 @@ mod test {
 
     #[test]
     fn computing_the_normal_on_a_translated_sphere() {
-        let s = Sphere::new(Some(translation(0.0, 1.0, 0.0)), None);
+        let s = Sphere::new(
+            Some(Transform::default().translation(0.0, 1.0, 0.0).build()),
+            None,
+        );
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
 
         assert_eq!(n, Vector::new(0.0, 0.70711, -0.70711));
@@ -257,7 +266,12 @@ mod test {
     #[test]
     fn computing_the_normal_on_a_transformed_sphere() {
         let s = Sphere::new(
-            Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(std::f64::consts::PI / 5.0)),
+            Some(
+                Transform::default()
+                    .rotation_z(std::f64::consts::PI / 5.0)
+                    .scaling(1.0, 0.5, 1.0)
+                    .build(),
+            ),
             None,
         );
         let n = s.normal_at(&Point::new(

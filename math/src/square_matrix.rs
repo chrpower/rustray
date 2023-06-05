@@ -1,18 +1,18 @@
 #[derive(Debug, Clone, Copy)]
-pub struct SquareMatrix<const N: usize> {
-    data: [[f64; N]; N],
+pub(crate) struct SquareMatrix<const N: usize> {
+    pub(crate) data: [[f64; N]; N],
 }
 
 impl<const N: usize> SquareMatrix<N> {
-    pub fn new(data: [[f64; N]; N]) -> Self {
+    pub(crate) fn new(data: [[f64; N]; N]) -> Self {
         Self { data }
     }
 
-    pub fn zeros() -> SquareMatrix<N> {
+    fn zeros() -> Self {
         SquareMatrix::new([[0.0; N]; N])
     }
 
-    pub fn identity() -> SquareMatrix<N> {
+    pub(crate) fn identity() -> Self {
         let mut result = SquareMatrix::new([[0.0; N]; N]);
         for i in 0..N {
             result[i][i] = 1.0;
@@ -20,7 +20,7 @@ impl<const N: usize> SquareMatrix<N> {
         result
     }
 
-    pub fn transpose(&self) -> SquareMatrix<N> {
+    pub(crate) fn transpose(&self) -> Self {
         let mut result = SquareMatrix::new([[0.0; N]; N]);
         for (i, row) in self.data.iter().enumerate() {
             for (j, val) in row.iter().enumerate() {
@@ -32,12 +32,12 @@ impl<const N: usize> SquareMatrix<N> {
 }
 
 impl SquareMatrix<4> {
-    pub fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<3> {
+    fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<3> {
         if row >= 4 || col >= 4 {
-            panic!("Invalid indices: {}, {}", row, col);
+            panic!("Invalid indices for a 4x4 matrix : {}, {}", row, col);
         }
 
-        let mut result = [[0.0; 3]; 3];
+        let mut result = SquareMatrix::<3>::zeros();
         let mut row_index = 0;
         for (i, row_val) in self.data.iter().enumerate() {
             if i == row {
@@ -53,10 +53,10 @@ impl SquareMatrix<4> {
             }
             row_index += 1;
         }
-        SquareMatrix::<3>::new(result)
+        result
     }
 
-    pub fn determinant(&self) -> f64 {
+    fn determinant(&self) -> f64 {
         let mut result = 0.0;
         for (col, _) in self.data[0].iter().enumerate() {
             result += self[0][col] * self.cofactor(0, col);
@@ -64,11 +64,11 @@ impl SquareMatrix<4> {
         result
     }
 
-    pub fn minor(&self, row: usize, col: usize) -> f64 {
+    fn minor(&self, row: usize, col: usize) -> f64 {
         self.submatrix(row, col).determinant()
     }
 
-    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+    fn cofactor(&self, row: usize, col: usize) -> f64 {
         let minor = self.minor(row, col);
         if (row + col) % 2 == 0 {
             minor
@@ -77,10 +77,10 @@ impl SquareMatrix<4> {
         }
     }
 
-    pub fn inverse(&self) -> SquareMatrix<4> {
+    pub(crate) fn inverse(&self) -> Result<Self, &'static str> {
         let determinant = self.determinant();
         if determinant == 0.0 {
-            panic!("Cannot invert matrix with determinant of 0");
+            return Err("Cannot invert matrix with determinant of 0");
         }
         let mut result = SquareMatrix::new([[0.0; 4]; 4]);
         for (row, row_val) in self.data.iter().enumerate() {
@@ -88,17 +88,17 @@ impl SquareMatrix<4> {
                 result[col][row] = self.cofactor(row, col) / determinant;
             }
         }
-        result
+        Ok(result)
     }
 }
 
 impl SquareMatrix<3> {
-    pub fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<2> {
+    fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<2> {
         if row >= 3 || col >= 3 {
-            panic!("Invalid indices: {}, {}", row, col);
+            panic!("Invalid indices for a 3x3 matrix: {}, {}", row, col);
         }
 
-        let mut result = [[0.0; 2]; 2];
+        let mut result = SquareMatrix::<2>::zeros();
         let mut row_index = 0;
         for (i, row_val) in self.data.iter().enumerate() {
             if i == row {
@@ -114,10 +114,10 @@ impl SquareMatrix<3> {
             }
             row_index += 1;
         }
-        SquareMatrix::<2>::new(result)
+        result
     }
 
-    pub fn determinant(&self) -> f64 {
+    fn determinant(&self) -> f64 {
         let mut result = 0.0;
         for (col, _) in self.data[0].iter().enumerate() {
             result += self[0][col] * self.cofactor(0, col);
@@ -125,11 +125,11 @@ impl SquareMatrix<3> {
         result
     }
 
-    pub fn minor(&self, row: usize, col: usize) -> f64 {
+    fn minor(&self, row: usize, col: usize) -> f64 {
         self.submatrix(row, col).determinant()
     }
 
-    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+    fn cofactor(&self, row: usize, col: usize) -> f64 {
         let minor = self.minor(row, col);
         if (row + col) % 2 == 0 {
             minor
@@ -138,10 +138,11 @@ impl SquareMatrix<3> {
         }
     }
 
-    pub fn inverse(&self) -> SquareMatrix<3> {
+    #[allow(dead_code)]
+    fn inverse(&self) -> Result<SquareMatrix<3>, &'static str> {
         let determinant = self.determinant();
         if determinant == 0.0 {
-            panic!("Cannot invert matrix with determinant of 0");
+            return Err("Cannot invert matrix with determinant of 0");
         }
         let mut result = SquareMatrix::new([[0.0; 3]; 3]);
         for (row, row_val) in self.data.iter().enumerate() {
@@ -149,28 +150,29 @@ impl SquareMatrix<3> {
                 result[col][row] = self.cofactor(row, col) / determinant;
             }
         }
-        result
+        Ok(result)
     }
 }
 
 impl SquareMatrix<2> {
-    pub fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<1> {
+    #[allow(dead_code)]
+    fn submatrix(&self, row: usize, col: usize) -> SquareMatrix<1> {
         let value = match (row, col) {
             (0, 0) => self.data[1][1],
             (0, 1) => self.data[1][0],
             (1, 0) => self.data[0][1],
             (1, 1) => self.data[0][0],
-            _ => panic!("Invalid indices: {}, {}", row, col),
+            _ => panic!("Invalid indices for a 2x2 matrix: {}, {}", row, col),
         };
 
         SquareMatrix::new([[value]])
     }
 
-    pub fn determinant(&self) -> f64 {
+    fn determinant(&self) -> f64 {
         self[0][0] * self[1][1] - self[0][1] * self[1][0]
     }
 
-    pub fn minor(&self, row: usize, col: usize) -> f64 {
+    fn minor(&self, row: usize, col: usize) -> f64 {
         match (row, col) {
             (0, 0) => self[1][1],
             (0, 1) => self[1][0],
@@ -180,7 +182,8 @@ impl SquareMatrix<2> {
         }
     }
 
-    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+    #[allow(dead_code)]
+    fn cofactor(&self, row: usize, col: usize) -> f64 {
         let minor = self.minor(row, col);
         if (row + col) % 2 == 0 {
             minor
@@ -189,10 +192,11 @@ impl SquareMatrix<2> {
         }
     }
 
-    pub fn inverse(&self) -> SquareMatrix<2> {
+    #[allow(dead_code)]
+    fn inverse(&self) -> Result<SquareMatrix<2>, &'static str> {
         let determinant = self.determinant();
         if determinant == 0.0 {
-            panic!("Cannot invert matrix with determinant of 0");
+            return Err("Cannot invert matrix with determinant of 0");
         }
         let mut result = SquareMatrix::new([[0.0; 2]; 2]);
         for (row, row_val) in self.data.iter().enumerate() {
@@ -200,7 +204,7 @@ impl SquareMatrix<2> {
                 result[col][row] = self.cofactor(row, col) / determinant;
             }
         }
-        result
+        Ok(result)
     }
 }
 
@@ -248,63 +252,51 @@ impl<'a, 'b, const N: usize> Mul<&'b SquareMatrix<N>> for &'a SquareMatrix<N> {
     }
 }
 
-use core::Point;
-impl<'a, 'b> Mul<&'b Point> for &'a SquareMatrix<4> {
-    type Output = Point;
+macro_rules! impl_mul {
+    ($($t:ty)*) => ($(
+        impl<'a, 'b> Mul<&'b $t> for &'a SquareMatrix<4> {
+            type Output = $t;
 
-    fn mul(self, other: &'b Point) -> Point {
-        let x = self[0][0] * other.x()
-            + self[0][1] * other.y()
-            + self[0][2] * other.z()
-            + self[0][3] * other.w();
-        let y = self[1][0] * other.x()
-            + self[1][1] * other.y()
-            + self[1][2] * other.z()
-            + self[1][3] * other.w();
-        let z = self[2][0] * other.x()
-            + self[2][1] * other.y()
-            + self[2][2] * other.z()
-            + self[2][3] * other.w();
-        Point::new(x, y, z)
-    }
+            fn mul(self, other: &'b $t) -> $t {
+                let x = self[0][0] * other.x()
+                    + self[0][1] * other.y()
+                    + self[0][2] * other.z()
+                    + self[0][3] * other.w();
+                let y = self[1][0] * other.x()
+                    + self[1][1] * other.y()
+                    + self[1][2] * other.z()
+                    + self[1][3] * other.w();
+                let z = self[2][0] * other.x()
+                    + self[2][1] * other.y()
+                    + self[2][2] * other.z()
+                    + self[2][3] * other.w();
+                <$t>::new(x, y, z)
+            }
+        }
+    )*)
 }
 
-use core::Vector;
-impl<'a, 'b> Mul<&'b Vector> for &'a SquareMatrix<4> {
-    type Output = Vector;
-
-    fn mul(self, other: &'b Vector) -> Vector {
-        let x = self[0][0] * other.x()
-            + self[0][1] * other.y()
-            + self[0][2] * other.z()
-            + self[0][3] * other.w();
-        let y = self[1][0] * other.x()
-            + self[1][1] * other.y()
-            + self[1][2] * other.z()
-            + self[1][3] * other.w();
-        let z = self[2][0] * other.x()
-            + self[2][1] * other.y()
-            + self[2][2] * other.z()
-            + self[2][3] * other.w();
-        Vector::new(x, y, z)
-    }
+impl_mul! {
+    core::Point
+    core::Vector
 }
 
 #[cfg(test)]
 mod test {
+    use crate::square_matrix::SquareMatrix;
 
     mod construction {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_can_be_represented_and_accessed() {
+        fn matrix2x2_access() {
             let m = SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]);
             assert_eq!(m[0][0], 1.0);
             assert_eq!(m[1][1], 6.0);
         }
 
         #[test]
-        fn matrix3x3_can_be_represented_and_accessed() {
+        fn matrix3x3_access() {
             let m = SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
             assert_eq!(m[0][0], 1.0);
             assert_eq!(m[1][1], 6.0);
@@ -312,7 +304,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_can_be_represented_and_accessed() {
+        fn matrix4x4_access() {
             let m = SquareMatrix::new([
                 [1.0, 2.0, 3.0, 4.0],
                 [5.0, 6.0, 7.0, 8.0],
@@ -326,7 +318,7 @@ mod test {
         }
 
         #[test]
-        fn mut_matrix_can_be_updated() {
+        fn access_and_update() {
             let mut m = SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
             m[0][0] = 5.5;
             assert_eq!(m[0][0], 5.5);
@@ -334,10 +326,10 @@ mod test {
     }
 
     mod equality {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix_equality() {
+        fn equal() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]),
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]])
@@ -345,14 +337,14 @@ mod test {
         }
 
         #[test]
-        fn matrix_equality_with_small_difference() {
+        fn small_difference() {
             assert_eq!(
                 SquareMatrix::new([[1.0000001, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]),
                 SquareMatrix::new([[1.0, 2.0000001, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
             );
         }
         #[test]
-        fn matrix_inequality() {
+        fn different() {
             assert_ne!(
                 SquareMatrix::new([
                     [99.0, 2.0, 3.0, 4.0],
@@ -371,10 +363,12 @@ mod test {
     }
 
     mod multiplication {
-        use crate::matrix::SquareMatrix;
+        use core::{Point, Vector};
+
+        use super::*;
 
         #[test]
-        fn matrix2x2_multiplication() {
+        fn matrix2x2() {
             assert_eq!(
                 &SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]])
                     * &SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]),
@@ -383,7 +377,7 @@ mod test {
         }
 
         #[test]
-        fn matrix3x3_multiplication() {
+        fn matrix3x3() {
             assert_eq!(
                 &SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
                     * &SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]),
@@ -396,7 +390,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_multiplication() {
+        fn matrix4x4() {
             assert_eq!(
                 &SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -417,13 +411,39 @@ mod test {
                 ])
             );
         }
+
+        #[test]
+        fn multiplication_vector() {
+            assert_eq!(
+                &SquareMatrix::new([
+                    [1.0, 2.0, 3.0, 4.0],
+                    [2.0, 4.0, 4.0, 2.0],
+                    [8.0, 6.0, 4.0, 1.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]) * &Vector::new(1.0, 2.0, 3.0),
+                Vector::new(14.0, 22.0, 32.0)
+            );
+        }
+
+        #[test]
+        fn multiplication_point() {
+            assert_eq!(
+                &SquareMatrix::new([
+                    [1.0, 2.0, 3.0, 4.0],
+                    [2.0, 4.0, 4.0, 2.0],
+                    [8.0, 6.0, 4.0, 1.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]) * &Point::new(1.0, 2.0, 3.0),
+                Point::new(18.0, 24.0, 33.0)
+            );
+        }
     }
 
     mod identity {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn identity_matrix2x2() {
+        fn matrix2x2() {
             assert_eq!(
                 SquareMatrix::identity(),
                 SquareMatrix::new([[1.0, 0.0], [0.0, 1.0]])
@@ -431,7 +451,7 @@ mod test {
         }
 
         #[test]
-        fn matrix2x2_mul_identity() {
+        fn matrix2x2_multiplication() {
             assert_eq!(
                 &SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]) * &SquareMatrix::identity(),
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]])
@@ -439,7 +459,7 @@ mod test {
         }
 
         #[test]
-        fn identity_matrix3x3() {
+        fn matrix3x3() {
             assert_eq!(
                 SquareMatrix::identity(),
                 SquareMatrix::new([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -447,7 +467,7 @@ mod test {
         }
 
         #[test]
-        fn matrix3x3_mul_identity() {
+        fn matrix3x3_mul() {
             assert_eq!(
                 &SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
                     * &SquareMatrix::identity(),
@@ -456,7 +476,7 @@ mod test {
         }
 
         #[test]
-        fn identity_matrix4x4() {
+        fn matrix4x4() {
             assert_eq!(
                 SquareMatrix::identity(),
                 SquareMatrix::new([
@@ -469,7 +489,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_mul_identity() {
+        fn matrix4x4_multiplication() {
             assert_eq!(
                 &SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -488,10 +508,10 @@ mod test {
     }
 
     mod transposition {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_transposition() {
+        fn matrix2x2() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]).transpose(),
                 SquareMatrix::new([[1.0, 5.0], [2.0, 6.0]])
@@ -499,7 +519,7 @@ mod test {
         }
 
         #[test]
-        fn matrix3x3_transposition() {
+        fn matrix3x3() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
                     .transpose(),
@@ -508,7 +528,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_transposition() {
+        fn matrix4x4() {
             assert_eq!(
                 SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -527,7 +547,7 @@ mod test {
         }
 
         #[test]
-        fn identity_matrix4x4_transposition() {
+        fn matrix4x4_identity_transposition() {
             assert_eq!(
                 SquareMatrix::<4>::identity().transpose(),
                 SquareMatrix::<4>::identity()
@@ -536,10 +556,10 @@ mod test {
     }
 
     mod submatrix {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_submatrix_00() {
+        fn matrix2x2_00() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]).submatrix(0, 0),
                 SquareMatrix::new([[6.0]])
@@ -547,7 +567,7 @@ mod test {
         }
 
         #[test]
-        fn matrix3x3_submatrix_11() {
+        fn matrix3x3_11() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
                     .submatrix(1, 1),
@@ -556,7 +576,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_submatrix_11() {
+        fn matrix4x4_11() {
             assert_eq!(
                 SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -570,7 +590,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_submatrix_22() {
+        fn matrix4x4_22() {
             assert_eq!(
                 SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -585,10 +605,10 @@ mod test {
     }
 
     mod minor {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_minors() {
+        fn matrix2x2() {
             let matrix = SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]);
 
             let mut calculated_minors = SquareMatrix::zeros();
@@ -598,12 +618,14 @@ mod test {
                 }
             }
 
-            let expected_minors = SquareMatrix::new([[6.0, 5.0], [2.0, 1.0]]);
-            assert_eq!(calculated_minors, expected_minors);
+            assert_eq!(
+                calculated_minors,
+                SquareMatrix::new([[6.0, 5.0], [2.0, 1.0]])
+            );
         }
 
         #[test]
-        fn matrix3x3_minors() {
+        fn matrix3x3() {
             let matrix = SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
 
             let mut calculated_minors = SquareMatrix::zeros();
@@ -612,14 +634,15 @@ mod test {
                     calculated_minors[row][col] = matrix.minor(row, col);
                 }
             }
-            let expected_minors =
-                SquareMatrix::new([[-4.0, -8.0, -4.0], [-8.0, -16.0, -8.0], [-4.0, -8.0, -4.0]]);
 
-            assert_eq!(calculated_minors, expected_minors);
+            assert_eq!(
+                calculated_minors,
+                SquareMatrix::new([[-4.0, -8.0, -4.0], [-8.0, -16.0, -8.0], [-4.0, -8.0, -4.0]])
+            );
         }
 
         #[test]
-        fn matrix4x4_minors() {
+        fn matrix4x4() {
             let matrix = SquareMatrix::new([
                 [1.0, 2.0, 3.0, 4.0],
                 [5.0, 6.0, 7.0, 8.0],
@@ -634,31 +657,33 @@ mod test {
                 }
             }
 
-            let expected_minors = SquareMatrix::new([
-                [0.0, 6.661338147750939e-16, 1.3322676295501878e-15, 0.0],
-                [
-                    0.0,
-                    3.9968028886505635e-15,
-                    7.993605777301127e-15,
-                    1.4210854715202004e-14,
-                ],
-                [
-                    0.0,
-                    1.9984014443252818e-15,
-                    3.9968028886505635e-15,
-                    7.105427357601002e-15,
-                ],
-                [0.0, 1.3322676295501878e-15, 2.6645352591003757e-15, 0.0],
-            ]);
-            assert_eq!(calculated_minors, expected_minors);
+            assert_eq!(
+                calculated_minors,
+                SquareMatrix::new([
+                    [0.0, 6.661338147750939e-16, 1.3322676295501878e-15, 0.0],
+                    [
+                        0.0,
+                        3.9968028886505635e-15,
+                        7.993605777301127e-15,
+                        1.4210854715202004e-14,
+                    ],
+                    [
+                        0.0,
+                        1.9984014443252818e-15,
+                        3.9968028886505635e-15,
+                        7.105427357601002e-15,
+                    ],
+                    [0.0, 1.3322676295501878e-15, 2.6645352591003757e-15, 0.0],
+                ])
+            );
         }
     }
 
     mod cofactors {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_cofactor() {
+        fn matrix2x2() {
             let matrix = SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]);
 
             let mut calculated_cofactors = SquareMatrix::zeros();
@@ -667,13 +692,14 @@ mod test {
                     calculated_cofactors[row][col] = matrix.cofactor(row, col);
                 }
             }
-
-            let expected_cofactors = SquareMatrix::new([[6.0, -5.0], [-2.0, 1.0]]);
-            assert_eq!(calculated_cofactors, expected_cofactors);
+            assert_eq!(
+                calculated_cofactors,
+                SquareMatrix::new([[6.0, -5.0], [-2.0, 1.0]])
+            );
         }
 
         #[test]
-        fn matrix3x3_cofactor() {
+        fn matrix3x3() {
             let matrix = SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
 
             let mut calculated_cofactors = SquareMatrix::zeros();
@@ -683,13 +709,14 @@ mod test {
                 }
             }
 
-            let expected_cofactors =
-                SquareMatrix::new([[-4.0, 8.0, -4.0], [8.0, -16.0, 8.0], [-4.0, 8.0, -4.0]]);
-            assert_eq!(calculated_cofactors, expected_cofactors);
+            assert_eq!(
+                calculated_cofactors,
+                SquareMatrix::new([[-4.0, 8.0, -4.0], [8.0, -16.0, 8.0], [-4.0, 8.0, -4.0]])
+            );
         }
 
         #[test]
-        fn matrix4x4_cofactor() {
+        fn matrix4x4() {
             let matrix = SquareMatrix::new([
                 [1.0, 2.0, 3.0, 4.0],
                 [5.0, 6.0, 7.0, 8.0],
@@ -704,31 +731,33 @@ mod test {
                 }
             }
 
-            let expected_cofactors = SquareMatrix::new([
-                [0.0, -6.661338147750939e-16, 1.3322676295501878e-15, 0.0],
-                [
-                    0.0,
-                    3.9968028886505635e-15,
-                    -7.993605777301127e-15,
-                    1.4210854715202004e-14,
-                ],
-                [
-                    0.0,
-                    -1.9984014443252818e-15,
-                    3.9968028886505635e-15,
-                    -7.105427357601002e-15,
-                ],
-                [0.0, 1.3322676295501878e-15, -2.6645352591003757e-15, 0.0],
-            ]);
-            assert_eq!(calculated_cofactors, expected_cofactors);
+            assert_eq!(
+                calculated_cofactors,
+                SquareMatrix::new([
+                    [0.0, -6.661338147750939e-16, 1.3322676295501878e-15, 0.0],
+                    [
+                        0.0,
+                        3.9968028886505635e-15,
+                        -7.993605777301127e-15,
+                        1.4210854715202004e-14,
+                    ],
+                    [
+                        0.0,
+                        -1.9984014443252818e-15,
+                        3.9968028886505635e-15,
+                        -7.105427357601002e-15,
+                    ],
+                    [0.0, 1.3322676295501878e-15, -2.6645352591003757e-15, 0.0],
+                ])
+            );
         }
     }
 
     mod determinant {
-        use crate::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_determinant() {
+        fn matrix2x2() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]).determinant(),
                 -4.0
@@ -736,7 +765,7 @@ mod test {
         }
 
         #[test]
-        fn matrix3x3_determinant() {
+        fn matrix3x3() {
             assert_eq!(
                 SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
                     .determinant(),
@@ -745,7 +774,7 @@ mod test {
         }
 
         #[test]
-        fn matrix4x4_determinant() {
+        fn matrix4x4() {
             assert_eq!(
                 SquareMatrix::new([
                     [1.0, 2.0, 3.0, 4.0],
@@ -760,26 +789,30 @@ mod test {
     }
 
     mod inverse {
-        use crate::matrix::SquareMatrix;
+        use super::*;
 
         #[test]
-        fn matrix2x2_inverse() {
+        fn matrix2x2() {
             assert_eq!(
-                SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]]).inverse(),
+                SquareMatrix::new([[1.0, 2.0], [5.0, 6.0]])
+                    .inverse()
+                    .unwrap(),
                 SquareMatrix::new([[-1.5, 0.5], [1.25, -0.25]])
             );
         }
 
         #[test]
-        fn matrix3x3_inverse() {
+        fn matrix3x3() {
             assert_eq!(
-                SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 8.0], [9.0, 10.0, 12.0]]).inverse(),
+                SquareMatrix::new([[1.0, 2.0, 3.0], [5.0, 6.0, 8.0], [9.0, 10.0, 12.0]])
+                    .inverse()
+                    .unwrap(),
                 SquareMatrix::new([[-2.0, 1.5, -0.5], [3.0, -3.75, 1.75], [-1.0, 2.0, -1.0]])
             );
         }
 
         #[test]
-        fn matrix4x4_inverse() {
+        fn matrix4x4() {
             assert_eq!(
                 SquareMatrix::new([
                     [-5.0, 2.0, 6.0, -8.0],
@@ -787,7 +820,8 @@ mod test {
                     [7.0, 7.0, -6.0, -7.0],
                     [1.0, -3.0, 7.0, 4.0]
                 ])
-                .inverse(),
+                .inverse()
+                .unwrap(),
                 SquareMatrix::new([
                     [0.21805, 0.45113, 0.24060, -0.04511],
                     [-0.80827, -1.45677, -0.44361, 0.52068],
@@ -798,15 +832,15 @@ mod test {
         }
 
         #[test]
-        #[should_panic]
-        fn matrix_cannot_be_inverted() {
-            let _ = SquareMatrix::new([
+        fn cannot_be_inverted() {
+            assert!(SquareMatrix::new([
                 [1.0, 2.0, 3.0, 4.0],
                 [5.0, 6.0, 7.0, 8.0],
                 [9.0, 10.0, 11.0, 12.0],
                 [13.0, 14.0, 15.0, 16.0],
             ])
-            .inverse();
+            .inverse()
+            .is_err());
         }
     }
 }

@@ -49,10 +49,10 @@ impl<'a> Intersections<'a> {
 mod test {
     use crate::Intersection;
     use crate::Intersections;
-    use crate::Ray;
     use crate::Sphere;
     use core::Point;
     use core::Vector;
+    use math::Ray;
 
     #[test]
     fn an_intersection_encapsulates_t_and_object() {

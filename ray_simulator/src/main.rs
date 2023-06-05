@@ -1,7 +1,8 @@
 use core::{Colour, Point, Vector};
 
 use draw_lib::{write_ppm, Canvas, PpmWrapper};
-use geom_lib::{scaling, translation, Material, PointLight, Ray, Sphere, SquareMatrix};
+use geom_lib::{Material, PointLight, Sphere};
+use math::{Matrix4, Ray, Transform};
 
 fn main() {
     plot_projectile();
@@ -17,11 +18,13 @@ fn plot_clock() {
 
     let mut canvas = Canvas::new(CANVAS_SIZE, CANVAS_SIZE);
 
-    let position_transformation =
-        &translation(CANVAS_CENTER, CANVAS_CENTER, 0.0) * &scaling(CLOCK_RADIUS, CLOCK_RADIUS, 0.0);
+    let position_transformation = Transform::default()
+        .translation(CANVAS_CENTER, CANVAS_CENTER, 0.0)
+        .scaling(CLOCK_RADIUS, CLOCK_RADIUS, 0.0)
+        .build();
 
     const HOUR_ROTATION: f64 = std::f64::consts::PI / 6.0;
-    let clock_rotation = geom_lib::rotation_z(HOUR_ROTATION);
+    let clock_rotation = Transform::default().rotation_z(HOUR_ROTATION).build();
 
     let mut hand_position = Point::new(0.0, 1.0, 0.0);
     draw_clock_hand(&mut canvas, &position_transformation, &hand_position);
@@ -37,11 +40,7 @@ fn plot_clock() {
     }
 }
 
-fn draw_clock_hand(
-    canvas: &mut Canvas,
-    position_transformation: &SquareMatrix<4>,
-    hand_position: &Point,
-) {
+fn draw_clock_hand(canvas: &mut Canvas, position_transformation: &Matrix4, hand_position: &Point) {
     let clock_point = position_transformation * hand_position;
     canvas
         .write_pixel(
