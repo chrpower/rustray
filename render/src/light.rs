@@ -1,9 +1,10 @@
 use core::Colour;
 use core::Point;
-#[derive(Debug, Clone)]
+
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct PointLight {
-    pub(crate) position: Point,
-    pub(crate) intensity: Colour,
+    position: Point,
+    intensity: Colour,
 }
 
 impl PointLight {

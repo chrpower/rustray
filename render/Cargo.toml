@@ -1,5 +1,5 @@
 [package]
-name = "draw_lib"
+name = "render"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 core = { path = "../core" }
-shapes = { path = "../shapes" }
-chrono = "0.4"
+math = { path = "../math" }
