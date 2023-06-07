@@ -5,6 +5,6 @@ members = [
     "render",
     "output",
     "shapes",
-    "ray_simulator",
+    "raytracer",
 ]
 

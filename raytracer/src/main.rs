@@ -1,6 +1,6 @@
 use core::{Colour, Point};
 use math::{Matrix4, Ray};
-use output::{Canvas, PpmWrapper, write_ppm};
+use output::{write_ppm, Canvas, PpmWrapper};
 use render::PointLight;
 use shapes::{find_hit, Material, Sphere};
 
@@ -26,9 +26,7 @@ fn main() {
         for x in 0..canvas_pixels {
             let world_x = -half + pixel_size * x as f64;
             let position = Point::new(world_x, world_y, wall_z);
-
             let ray = Ray::new(ray_origin, (&position - &ray_origin).normalize());
-
             let intersections = sphere.intersect(&ray);
             if let Some(intersection) =
                 find_hit([[intersections[0].as_ref(), intersections[1].as_ref()]])
