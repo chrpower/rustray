@@ -17,26 +17,18 @@ impl Writable for std::fs::File {
     }
 }
 
-fn generate_default_filename(p: &PpmWrapper) -> String {
-    use chrono::Local;
-    format!(
-        "{}_{}_{}.ppm",
-        p.width(),
-        p.height(),
-        Local::now().format("%Y%m%d%H%M%S")
-    )
+fn generate_filename(p: &PpmWrapper) -> String {
+    use std::time::SystemTime;
+    let timestamp = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .expect("Failed to obtain system time")
+        .as_secs();
+
+    format!("{}_{}_{}.ppm", p.width(), p.height(), timestamp)
 }
 
-pub fn write_ppm<W: Writable>(
-    ppm_wrapper: &PpmWrapper,
-    filename: Option<String>,
-) -> io::Result<()> {
-    let filename = match filename {
-        Some(name) => name,
-        None => generate_default_filename(ppm_wrapper),
-    };
-
-    let mut file = W::open(filename)?;
+pub fn write_ppm<W: Writable>(ppm_wrapper: &PpmWrapper) -> io::Result<()> {
+    let mut file = W::open(generate_filename(ppm_wrapper))?;
     file.write_all(ppm_wrapper.to_ppm().as_bytes())
 }
 
@@ -62,17 +54,15 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_default_filename() {
+    fn filename() {
         let ppm_wrapper = PpmWrapper::new(Canvas::new(10, 10), 255);
-        let filename = generate_default_filename(&ppm_wrapper);
+        let filename = generate_filename(&ppm_wrapper);
         assert!(filename.starts_with("10_10_"));
         assert!(filename.ends_with(".ppm"));
     }
 
     #[test]
     fn write_ppm_to_mock() {
-        let ppm_wrapper = PpmWrapper::new(Canvas::new(10, 10), 255);
-        let filename = Some("test.ppm".to_string());
-        assert!(write_ppm::<MockWritable>(&ppm_wrapper, filename).is_ok());
+        assert!(write_ppm::<MockWritable>(&PpmWrapper::new(Canvas::new(10, 10), 255)).is_ok());
     }
 }

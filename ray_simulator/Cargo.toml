@@ -8,7 +8,8 @@ edition = "2021"
 [dependencies]
 core = { path = "../core" }
 math = { path = "../math" }
+output = { path = "../output" }
 render = { path = "../render" }
 shapes = { path = "../shapes" }
-draw_lib = { path = "../draw_lib" }
+
 

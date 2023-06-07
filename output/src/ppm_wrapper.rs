@@ -13,11 +13,11 @@ impl PpmWrapper {
     }
 
     pub fn height(&self) -> usize {
-        self.canvas.height()
+        self.canvas.height
     }
 
     pub fn width(&self) -> usize {
-        self.canvas.width()
+        self.canvas.width
     }
 
     fn generate_header(&self) -> String {
@@ -31,9 +31,9 @@ impl PpmWrapper {
 
     fn generate_body(&self) -> String {
         let mut body = String::new();
-        for y in 0..self.canvas.height() {
+        for y in 0..self.canvas.height {
             let mut line = String::new();
-            for x in 0..self.canvas.width() {
+            for x in 0..self.canvas.width {
                 let pixel = self.canvas.pixel_at(x, y).unwrap();
                 let red = scale_colour_value(pixel.red(), self.max_colour_value);
                 let green = scale_colour_value(pixel.green(), self.max_colour_value);
@@ -85,8 +85,8 @@ mod tests {
     use core::Colour;
 
     fn fill_canvas_with_colour(canvas: &mut Canvas, colour: Colour) {
-        for y in 0..canvas.height() {
-            for x in 0..canvas.width() {
+        for y in 0..canvas.height {
+            for x in 0..canvas.width {
                 canvas.write_pixel(x, y, colour.clone()).unwrap();
             }
         }

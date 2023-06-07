@@ -1,7 +1,6 @@
 use core::{Colour, Point};
-
-use draw_lib::{write_ppm, Canvas, PpmWrapper};
 use math::{Matrix4, Ray};
+use output::{Canvas, PpmWrapper, write_ppm};
 use render::PointLight;
 use shapes::{find_hit, Material, Sphere};
 
@@ -29,7 +28,6 @@ fn main() {
             let position = Point::new(world_x, world_y, wall_z);
 
             let ray = Ray::new(ray_origin, (&position - &ray_origin).normalize());
-            //let intersection = Intersections::new(sphere.intersect(&ray));
 
             let intersections = sphere.intersect(&ray);
             if let Some(intersection) =
@@ -50,7 +48,7 @@ fn main() {
     }
 
     let ppm_wrapper = PpmWrapper::new(canvas, 255);
-    if let Err(e) = write_ppm::<std::fs::File>(&ppm_wrapper, None) {
+    if let Err(e) = write_ppm::<std::fs::File>(&ppm_wrapper) {
         eprintln!("Failed to write PPM file: {}", e);
     }
 }
