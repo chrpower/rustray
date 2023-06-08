@@ -1,9 +1,10 @@
-use crate::Shape;
+use crate::{Computations, Shape};
+use math::Ray;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Intersection<'a> {
-    t: f64,
-    shape: &'a dyn Shape,
+    pub t: f64,
+    pub shape: &'a dyn Shape,
 }
 
 impl<'a> Intersection<'a> {
@@ -11,34 +12,32 @@ impl<'a> Intersection<'a> {
         Self { t, shape }
     }
 
-    pub fn t(&self) -> f64 {
-        self.t
-    }
+    pub fn prepare_computations(&self, ray: Ray) -> Computations {
+        let Intersection { t, shape } = self;
 
-    pub fn get_shape(&self) -> &dyn Shape {
-        self.shape
+        let point = ray.position(*t);
+        let eye_v = -&ray.direction;
+        let mut normal_v = shape.normal_at(&point);
+
+        let inside = normal_v.dot(&eye_v) < 0.0;
+        normal_v = if inside { -&normal_v } else { normal_v };
+
+        Computations::new(*t, *shape, point, eye_v, normal_v, inside)
     }
 }
 
-use std::cmp::Ordering;
-pub fn find_hit<'a, I>(intersections: I) -> Option<&'a Intersection<'a>>
-where
-    I: IntoIterator<Item = [Option<&'a Intersection<'a>>; 2]>,
-{
+pub fn find_hit<'a>(intersections: &'a [Intersection<'a>]) -> Option<&'a Intersection<'a>> {
     intersections
-        .into_iter()
-        .flatten()
-        .flatten()
-        .filter(|intersection| intersection.t() >= 0.0)
-        .min_by(|a, b| a.t().partial_cmp(&b.t()).unwrap_or(Ordering::Equal))
+        .iter()
+        .filter(|i| i.t >= 0.0)
+        .min_by(|a, b| a.t.partial_cmp(&b.t).unwrap())
 }
 
 #[cfg(test)]
 mod test {
-    use crate::Intersection;
-    use crate::Material;
-    use crate::Sphere;
-    use math::Matrix4;
+    use crate::{Intersection, Material, Sphere};
+    use core::{Point, Vector};
+    use math::{Matrix4, Ray};
 
     mod creation {
         use super::*;
@@ -47,26 +46,23 @@ mod test {
         fn access_t_and_shape() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let intersection = Intersection::new(3.5, &sphere);
 
-            assert_eq!(intersection.t(), 3.5);
-            assert_eq!(intersection.get_shape().id(), &sphere.id);
+            assert_eq!(intersection.t, 3.5);
+            assert_eq!(intersection.shape.id(), &sphere.id);
         }
     }
 
     mod interset {
         use super::*;
-        use core::Point;
-        use core::Vector;
-        use math::Ray;
 
         #[test]
         fn sets_shape() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let xs = sphere.intersect(&Ray::new(
                 Point::new(0.0, 0.0, -5.0),
@@ -74,8 +70,8 @@ mod test {
             ));
 
             assert_eq!(xs.len(), 2);
-            assert_eq!(xs[0].as_ref().unwrap().get_shape().id(), &sphere.id);
-            assert_eq!(xs[1].as_ref().unwrap().get_shape().id(), &sphere.id);
+            assert_eq!(xs[0].shape.id(), &sphere.id);
+            assert_eq!(xs[1].shape.id(), &sphere.id);
         }
     }
 
@@ -87,54 +83,96 @@ mod test {
         fn all_intersections_have_positive_t() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let i1 = Intersection::new(1.0, &sphere);
             let i2 = Intersection::new(2.0, &sphere);
+            let intersections = vec![i1, i2];
 
-            let xs = find_hit([[Some(&i1), Some(&i2)]]);
-            assert_eq!(xs.unwrap().t(), i1.t());
+            let hit = find_hit(&intersections);
+            assert_eq!(hit.unwrap().t, i1.t);
         }
 
         #[test]
         fn some_intersections_have_negative_t() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let i1 = Intersection::new(-1.0, &sphere);
             let i2 = Intersection::new(1.0, &sphere);
-            let xs = find_hit([[Some(&i1), Some(&i2)]]);
+            let intersections = vec![i1, i2];
 
-            assert_eq!(xs.unwrap().t(), i2.t());
+            let hit = find_hit(&intersections);
+            assert_eq!(hit.unwrap().t, i2.t);
         }
 
         #[test]
         fn all_intersections_have_negative_t() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let i1 = Intersection::new(-2.0, &sphere);
             let i2 = Intersection::new(-1.0, &sphere);
-            let xs = find_hit([[Some(&i1), Some(&i2)]]);
+            let intersections = vec![i1, i2];
 
-            assert!(xs.is_none());
+            let hit = find_hit(&intersections);
+
+            assert!(hit.is_none());
         }
 
         #[test]
         fn always_lowest_nonnegative_intersection() {
             let identity = Matrix4::identity();
             let material = Material::default();
-            let sphere = Sphere::new(&identity, &material);
+            let sphere = Sphere::new(identity, material);
 
             let i1 = Intersection::new(5.0, &sphere);
             let i2 = Intersection::new(7.0, &sphere);
             let i3 = Intersection::new(-3.0, &sphere);
             let i4 = Intersection::new(2.0, &sphere);
-            let xs = find_hit([[Some(&i1), Some(&i2)], [Some(&i3), Some(&i4)]]);
+            let intersections = vec![i1, i2, i3, i4];
 
-            assert_eq!(xs.unwrap().t(), i4.t());
+            let hit = find_hit(&intersections);
+            assert_eq!(hit.unwrap().t, i4.t);
+        }
+    }
+
+    mod prepare_computations {
+        use super::*;
+
+        #[test]
+        fn prepare_computations() {
+            let shape = Sphere::new(Matrix4::identity(), Material::default());
+            let intersection = Intersection::new(4.0, &shape);
+            let computations = intersection.prepare_computations(Ray::new(
+                Point::new(0.0, 0.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0),
+            ));
+
+            assert_eq!(computations.t, 4.0);
+            assert!(computations.shape.equals(&shape));
+            assert_eq!(computations.point, Point::new(0.0, 0.0, -1.0));
+            assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
+            assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));
+        }
+
+        #[test]
+        fn prepare_computations_inside() {
+            let shape = Sphere::new(Matrix4::identity(), Material::default());
+            let intersection = Intersection::new(1.0, &shape);
+            let computations = intersection.prepare_computations(Ray::new(
+                Point::new(0.0, 0.0, 0.0),
+                Vector::new(0.0, 0.0, 1.0),
+            ));
+
+            assert_eq!(computations.t, 1.0);
+            assert!(computations.shape.equals(&shape));
+            assert_eq!(computations.point, Point::new(0.0, 0.0, 1.0));
+            assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
+            assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));
+            assert!(computations.inside);
         }
     }
 }

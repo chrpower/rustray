@@ -1,8 +1,10 @@
+mod computations;
 mod intersections;
 mod materials;
 mod shape;
 mod sphere;
 
+pub use self::computations::Computations;
 pub use self::intersections::find_hit;
 pub use self::intersections::Intersection;
 pub use self::materials::Material;

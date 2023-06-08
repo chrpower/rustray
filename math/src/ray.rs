@@ -2,23 +2,15 @@ use crate::Matrix4;
 use core::Point;
 use core::Vector;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Ray {
-    origin: Point,
-    direction: Vector,
+    pub origin: Point,
+    pub direction: Vector,
 }
 
 impl Ray {
     pub fn new(origin: Point, direction: Vector) -> Self {
         Self { origin, direction }
-    }
-
-    pub fn origin(&self) -> &Point {
-        &self.origin
-    }
-
-    pub fn direction(&self) -> &Vector {
-        &self.direction
     }
 
     pub fn position(&self, time: f64) -> Point {
@@ -49,8 +41,8 @@ mod test {
             let direction = Vector::new(4.0, 5.0, 6.0);
             let ray = Ray::new(origin.clone(), direction.clone());
 
-            assert_eq!(ray.origin(), &origin);
-            assert_eq!(ray.direction(), &direction);
+            assert_eq!(ray.origin, origin);
+            assert_eq!(ray.direction, direction);
         }
     }
 
@@ -98,8 +90,8 @@ mod test {
             let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0))
                 .transform(&Transform::default().translation(3.0, 4.0, 5.0).build());
 
-            assert_eq!(r.origin(), &Point::new(4.0, 6.0, 8.0));
-            assert_eq!(r.direction(), &Vector::new(0.0, 1.0, 0.0));
+            assert_eq!(r.origin, Point::new(4.0, 6.0, 8.0));
+            assert_eq!(r.direction, Vector::new(0.0, 1.0, 0.0));
         }
 
         #[test]
@@ -107,8 +99,8 @@ mod test {
             let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0))
                 .transform(&Transform::default().scaling(2.0, 3.0, 4.0).build());
 
-            assert_eq!(r.origin(), &Point::new(2.0, 6.0, 12.0));
-            assert_eq!(r.direction(), &Vector::new(0.0, 3.0, 0.0));
+            assert_eq!(r.origin, Point::new(2.0, 6.0, 12.0));
+            assert_eq!(r.direction, Vector::new(0.0, 3.0, 0.0));
         }
     }
 }

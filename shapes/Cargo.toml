@@ -8,4 +8,3 @@ edition = "2021"
 [dependencies]
 core = { path = "../core" }
 math = { path = "../math" }
-render = { path = "../render" }
