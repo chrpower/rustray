@@ -8,6 +8,7 @@ pub struct Computations<'a> {
     pub eye_v: Vector,
     pub normal_v: Vector,
     pub inside: bool,
+    pub over_point: Point,
 }
 
 impl<'a> Computations<'a> {
@@ -26,6 +27,7 @@ impl<'a> Computations<'a> {
             eye_v,
             normal_v,
             inside,
+            over_point: &point + &(&normal_v * 0.0001),
         }
     }
 }

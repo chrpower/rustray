@@ -5,5 +5,5 @@ mod world;
 
 pub use self::camera::Camera;
 pub use self::light::PointLight;
-pub use self::lighting::shade_hit;
+pub use self::lighting::lighting;
 pub use self::world::World;

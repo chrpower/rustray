@@ -1,17 +1,23 @@
 use crate::PointLight;
 use core::{Colour, Point, Vector};
-use shapes::{Computations, Material};
+use shapes::Material;
 
-fn lighting(
+pub fn lighting(
     material: &Material,
     light: &PointLight,
     point: &Point,
     eyev: &Vector,
     normalv: &Vector,
+    in_shadow: bool,
 ) -> Colour {
     let effective_colour = &material.colour * &light.intensity;
-    let lightv = (&light.position - point).normalize();
     let ambient = &effective_colour * material.ambient;
+
+    if in_shadow {
+        return ambient;
+    }
+
+    let lightv = (&light.position - point).normalize();
     let light_dot_normal = lightv.dot(normalv);
 
     let (diffuse, specular) = if light_dot_normal < 0.0 {
@@ -34,16 +40,6 @@ fn lighting(
     &(&ambient + &diffuse) + &specular
 }
 
-pub fn shade_hit(light: &PointLight, comps: &Computations) -> Colour {
-    lighting(
-        comps.shape.material(),
-        light,
-        &comps.point,
-        &comps.eye_v,
-        &comps.normal_v,
-    )
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -63,6 +59,7 @@ mod tests {
                 &Point::new(0.0, 0.0, 0.0),
                 &Vector::new(0.0, 0.0, -1.0),
                 &Vector::new(0.0, 0.0, -1.0),
+                false,
             );
 
             assert_eq!(result, Colour::new(1.9, 1.9, 1.9));
@@ -76,6 +73,7 @@ mod tests {
                 &Point::new(0.0, 0.0, 0.0),
                 &Vector::new(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0),
                 &Vector::new(0.0, 0.0, -1.0),
+                false,
             );
 
             assert_eq!(result, Colour::new(1.0, 1.0, 1.0));
@@ -89,6 +87,7 @@ mod tests {
                 &Point::new(0.0, 0.0, 0.0),
                 &Vector::new(0.0, 0.0, -1.0),
                 &Vector::new(0.0, 0.0, -1.0),
+                false,
             );
 
             assert_eq!(result, Colour::new(0.7364, 0.7364, 0.7364));
@@ -102,6 +101,7 @@ mod tests {
                 &Point::new(0.0, 0.0, 0.0),
                 &Vector::new(0.0, -2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0),
                 &Vector::new(0.0, 0.0, -1.0),
+                false,
             );
 
             assert_eq!(result, Colour::new(1.6364, 1.6364, 1.6364));
@@ -115,6 +115,24 @@ mod tests {
                 &Point::new(0.0, 0.0, 0.0),
                 &Vector::new(0.0, 0.0, -1.0),
                 &Vector::new(0.0, 0.0, -1.0),
+                false,
+            );
+
+            assert_eq!(result, Colour::new(0.1, 0.1, 0.1));
+        }
+    }
+
+    mod shadow {
+        use super::*;
+        #[test]
+        fn lighting_with_the_surface_in_shadow() {
+            let result = lighting(
+                &Material::default(),
+                &PointLight::new(Point::new(0.0, 0.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
+                &Point::new(0.0, 0.0, 0.0),
+                &Vector::new(0.0, 0.0, -1.0),
+                &Vector::new(0.0, 0.0, -1.0),
+                true,
             );
 
             assert_eq!(result, Colour::new(0.1, 0.1, 0.1));

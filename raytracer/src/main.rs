@@ -57,7 +57,7 @@ fn main() {
         lm,
     );
 
-    let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), Colour::new(1.0, 1.0, 1.0));
+    let light = PointLight::new(Point::new(0.0, 2.0, 2.0), Colour::new(1.0, 1.0, 1.0));
 
     let world = render::World::new(
         vec![&floor, &left_wall, &right_wall, &middle, &right, &left],
