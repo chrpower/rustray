@@ -29,7 +29,7 @@ impl<'a> World<'a> {
 
     pub fn shade_hit(&self, comps: &Computations) -> Colour {
         lighting(
-            comps.shape.material(),
+            comps.shape.get_material(),
             &self.light,
             &comps.point,
             &comps.eye_v,

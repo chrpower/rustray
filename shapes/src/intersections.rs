@@ -152,7 +152,7 @@ mod test {
             ));
 
             assert_eq!(computations.t, 4.0);
-            assert!(computations.shape.equals(&shape));
+            assert_eq!(computations.shape.id(), &shape.id);
             assert_eq!(computations.point, Point::new(0.0, 0.0, -1.0));
             assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
             assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));
@@ -168,7 +168,7 @@ mod test {
             ));
 
             assert_eq!(computations.t, 1.0);
-            assert!(computations.shape.equals(&shape));
+            assert_eq!(computations.shape.id(), &shape.id);
             assert_eq!(computations.point, Point::new(0.0, 0.0, 1.0));
             assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
             assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));

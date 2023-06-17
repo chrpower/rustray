@@ -11,5 +11,7 @@ math = { path = "../math" }
 output = { path = "../output" }
 render = { path = "../render" }
 shapes = { path = "../shapes" }
+rand = "0.8"
+
 
 

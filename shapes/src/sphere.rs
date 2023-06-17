@@ -1,9 +1,7 @@
-use crate::{Intersection, Material, Shape};
+use crate::{Intersection, Material, Shape, SHAPE_ID};
 use core::{Point, Vector};
 use math::{Matrix4, Ray};
-use std::sync::atomic::{AtomicUsize, Ordering};
-
-static SPHERE_ID: AtomicUsize = AtomicUsize::new(0);
+use std::sync::atomic::Ordering;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -15,7 +13,7 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(transform: Matrix4, material: Material) -> Self {
-        let id = SPHERE_ID.fetch_add(1, Ordering::SeqCst);
+        let id = SHAPE_ID.fetch_add(1, Ordering::SeqCst);
         let inverse_transform = transform.inverse();
         Self {
             id,
@@ -52,6 +50,18 @@ impl Sphere {
     }
 }
 
+impl PartialEq for Sphere {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Default for Sphere {
+    fn default() -> Self {
+        Self::new(Matrix4::identity(), Material::default())
+    }
+}
+
 impl Shape for Sphere {
     fn id(&self) -> &usize {
         &self.id
@@ -61,16 +71,12 @@ impl Shape for Sphere {
         self.intersect(ray)
     }
 
-    fn material(&self) -> &Material {
+    fn get_material(&self) -> &Material {
         &self.material
     }
 
     fn normal_at(&self, world_point: &Point) -> Vector {
         self.normal_at(world_point)
-    }
-
-    fn equals(&self, other: &dyn Shape) -> bool {
-        self.id == *other.id()
     }
 }
 
