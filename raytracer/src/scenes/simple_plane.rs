@@ -1,22 +1,30 @@
 use core::{Colour, Point, Vector};
-use math::Transform;
+use math::{Matrix4, Transform};
 use output::Canvas;
 use render::{Camera, PointLight, World};
-use shapes::{Material, Plane, Sphere};
+use shapes::{Material, Patn, Pattern, Plane, Sphere};
 
 pub fn simple_plane(h_res: usize, v_res: usize, focal_length: f64) -> Canvas {
-    let mut fm = Material::new(Colour::new(1.0, 1.0, 1.0));
+    let mut fm = Material::new(Pattern::new(
+        Patn::Solid(Colour::new(1.0, 1.0, 1.0)),
+        Matrix4::identity(),
+    ));
     fm.diffuse = 0.85;
     fm.specular = 0.15;
-
     let floor = Plane::new(Transform::default().build(), fm);
 
-    let mut mm = Material::new(Colour::new(0.1, 1.0, 0.5));
+    let mut mm = Material::new(Pattern::new(
+        Patn::Solid(Colour::new(0.1, 1.0, 0.5)),
+        Matrix4::identity(),
+    ));
     mm.diffuse = 0.7;
     mm.specular = 0.3;
     let middle = Sphere::new(Transform::default().translation(-0.5, 1.0, 0.5).build(), mm);
 
-    let mut rm = Material::new(Colour::new(0.5, 1.0, 0.1));
+    let mut rm = Material::new(Pattern::new(
+        Patn::Solid(Colour::new(0.5, 1.0, 0.1)),
+        Matrix4::identity(),
+    ));
     rm.diffuse = 0.7;
     rm.specular = 0.3;
     let right = Sphere::new(
@@ -27,7 +35,10 @@ pub fn simple_plane(h_res: usize, v_res: usize, focal_length: f64) -> Canvas {
         rm,
     );
 
-    let mut lm = Material::new(Colour::new(1.0, 0.8, 0.1));
+    let mut lm = Material::new(Pattern::new(
+        Patn::Solid(Colour::new(1.0, 0.8, 0.1)),
+        Matrix4::identity(),
+    ));
     lm.diffuse = 0.7;
     lm.specular = 0.3;
     let left = Sphere::new(

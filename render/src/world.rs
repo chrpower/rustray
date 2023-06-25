@@ -29,9 +29,10 @@ impl<'a> World<'a> {
 
     pub fn shade_hit(&self, comps: &Computations) -> Colour {
         lighting(
+            comps.shape,
             comps.shape.get_material(),
             &self.light,
-            &comps.point,
+            &comps.over_point,
             &comps.eye_v,
             &comps.normal_v,
             self.is_shadowed(comps.over_point),
@@ -57,7 +58,7 @@ mod tests {
     use crate::{PointLight, World};
     use core::{Colour, Point, Vector};
     use math::{Matrix4, Transform};
-    use shapes::{Material, Sphere};
+    use shapes::{Material, Patn, Pattern, Sphere};
 
     mod contruction {
         use super::*;
@@ -119,7 +120,10 @@ mod tests {
 
         #[test]
         fn shade_intersection() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -140,7 +144,10 @@ mod tests {
 
         #[test]
         fn shade_intersection_inside() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -156,7 +163,7 @@ mod tests {
                 Point::new(0.0, 0.0, 0.0),
                 Vector::new(0.0, 0.0, 1.0),
             ));
-            assert_eq!(colour, Colour::new(0.90498, 0.90498, 0.90498));
+            assert_eq!(colour, Colour::new(0.90495, 0.90495, 0.90495));
         }
 
         #[test]
@@ -176,7 +183,10 @@ mod tests {
 
         #[test]
         fn colour_when_a_ray_hits() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -195,7 +205,10 @@ mod tests {
 
         #[test]
         fn colour_with_intersection_behind_ray() {
-            let mut material_outer = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material_outer = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material_outer.ambient = 1.0;
             material_outer.diffuse = 0.7;
             material_outer.specular = 0.2;
@@ -214,7 +227,7 @@ mod tests {
 
             let ray = math::Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
 
-            assert_eq!(world.colour_at(ray), material_inner.colour);
+            assert_eq!(world.colour_at(ray), Colour::new(1.0, 1.0, 1.0));
         }
     }
 
@@ -223,7 +236,10 @@ mod tests {
 
         #[test]
         fn nothing_collinear_with_point_and_light() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -241,7 +257,10 @@ mod tests {
 
         #[test]
         fn object_between_point_and_light() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -259,7 +278,10 @@ mod tests {
 
         #[test]
         fn object_behind_light() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);
@@ -277,7 +299,10 @@ mod tests {
 
         #[test]
         fn object_behind_point() {
-            let mut material = Material::new(Colour::new(0.8, 1.0, 0.6));
+            let mut material = Material::new(Pattern::new(
+                Patn::Solid(Colour::new(0.8, 1.0, 0.6)),
+                Transform::default().build(),
+            ));
             material.diffuse = 0.7;
             material.specular = 0.2;
             let s1 = Sphere::new(Matrix4::identity(), material);

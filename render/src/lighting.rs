@@ -1,8 +1,9 @@
 use crate::PointLight;
 use core::{Colour, Point, Vector};
-use shapes::Material;
+use shapes::{Material, Shape};
 
 pub fn lighting(
+    shape: &dyn Shape,
     material: &Material,
     light: &PointLight,
     point: &Point,
@@ -10,7 +11,7 @@ pub fn lighting(
     normalv: &Vector,
     in_shadow: bool,
 ) -> Colour {
-    let effective_colour = &material.colour * &light.intensity;
+    let effective_colour = &shape.colour_at(point) * &light.intensity;
     let ambient = &effective_colour * material.ambient;
 
     if in_shadow {
@@ -43,17 +44,20 @@ pub fn lighting(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::PointLight;
+    use core::Colour;
+    use core::Point;
+    use core::Vector;
+    use math::Matrix4;
+    use shapes::Material;
+    use shapes::Sphere;
     mod lighting {
         use super::*;
-        use crate::PointLight;
-        use core::Colour;
-        use core::Point;
-        use core::Vector;
-        use shapes::Material;
 
         #[test]
         fn eye_between_the_light_and_the_surface() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 0.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),
@@ -68,6 +72,7 @@ mod tests {
         #[test]
         fn eye_between_light_and_surface_eye_offset_45_degrees() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 0.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),
@@ -82,6 +87,7 @@ mod tests {
         #[test]
         fn eye_opposite_surface_light_offset_45_degrees() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 10.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),
@@ -96,6 +102,7 @@ mod tests {
         #[test]
         fn eye_in_the_path_of_the_reflection_vector() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 10.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),
@@ -110,6 +117,7 @@ mod tests {
         #[test]
         fn light_behind_the_surface() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 0.0, 10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),
@@ -127,6 +135,7 @@ mod tests {
         #[test]
         fn lighting_with_the_surface_in_shadow() {
             let result = lighting(
+                &Sphere::new(Matrix4::identity(), Material::default()),
                 &Material::default(),
                 &PointLight::new(Point::new(0.0, 0.0, -10.0), Colour::new(1.0, 1.0, 1.0)),
                 &Point::new(0.0, 0.0, 0.0),

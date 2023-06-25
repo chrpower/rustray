@@ -78,6 +78,14 @@ impl Shape for Sphere {
     fn normal_at(&self, world_point: &Point) -> Vector {
         self.normal_at(world_point)
     }
+
+    fn get_inverse_transform(&self) -> &Matrix4 {
+        &self.inverse_transform
+    }
+
+    fn colour_at(&self, world_point: &Point) -> core::Colour {
+        self.material.pattern.colour_at_object(self, world_point)
+    }
 }
 
 #[cfg(test)]
