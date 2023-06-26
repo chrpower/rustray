@@ -2,6 +2,7 @@ use crate::World;
 use core::Point;
 use math::{Matrix4, Ray};
 use output::Canvas;
+use rayon::prelude::*;
 
 pub struct Camera {
     hsize: usize,
@@ -39,14 +40,21 @@ impl Camera {
     }
 
     pub fn render(&self, world: &World) -> Canvas {
+        let pixels: Vec<_> = (0..self.vsize)
+            .into_par_iter()
+            .flat_map(|y| {
+                (0..self.hsize).into_par_iter().map(move |x| {
+                    let ray = self.ray_for_pixel(x, y);
+                    let colour = world.colour_at(ray);
+                    (x, y, colour)
+                })
+            })
+            .collect();
+
         let mut image = Canvas::new(self.hsize, self.vsize);
 
-        for y in 0..self.vsize {
-            for x in 0..self.hsize {
-                let ray = self.ray_for_pixel(x, y);
-                let colour = world.colour_at(ray);
-                let _ = image.write_pixel(x, y, colour);
-            }
+        for (x, y, color) in pixels {
+            let _ = image.write_pixel(x, y, color);
         }
 
         image

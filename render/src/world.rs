@@ -4,12 +4,12 @@ use math::Ray;
 use shapes::{find_hit, Computations, Intersection, Shape};
 
 pub struct World<'a> {
-    pub shapes: Vec<&'a dyn Shape>,
+    pub shapes: Vec<&'a Shape>,
     pub light: PointLight,
 }
 
 impl<'a> World<'a> {
-    pub fn new(shapes: Vec<&'a dyn Shape>, light: PointLight) -> Self {
+    pub fn new(shapes: Vec<&'a Shape>, light: PointLight) -> Self {
         Self { shapes, light }
     }
 

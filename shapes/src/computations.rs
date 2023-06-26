@@ -3,7 +3,7 @@ use core::{Point, Vector};
 
 pub struct Computations<'a> {
     pub t: f64,
-    pub shape: &'a dyn Shape,
+    pub shape: &'a Shape,
     pub point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
@@ -14,7 +14,7 @@ pub struct Computations<'a> {
 impl<'a> Computations<'a> {
     pub fn new(
         t: f64,
-        shape: &'a dyn Shape,
+        shape: &'a Shape,
         point: Point,
         eye_v: Vector,
         normal_v: Vector,

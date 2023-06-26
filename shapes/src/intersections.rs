@@ -4,11 +4,11 @@ use math::Ray;
 #[derive(Debug, Copy, Clone)]
 pub struct Intersection<'a> {
     pub t: f64,
-    pub shape: &'a dyn Shape,
+    pub shape: &'a Shape,
 }
 
 impl<'a> Intersection<'a> {
-    pub fn new(t: f64, shape: &'a dyn Shape) -> Self {
+    pub fn new(t: f64, shape: &'a Shape) -> Self {
         Self { t, shape }
     }
 
@@ -22,7 +22,7 @@ impl<'a> Intersection<'a> {
         let inside = normal_v.dot(&eye_v) < 0.0;
         normal_v = if inside { -&normal_v } else { normal_v };
 
-        Computations::new(*t, *shape, point, eye_v, normal_v, inside)
+        Computations::new(*t, shape, point, eye_v, normal_v, inside)
     }
 }
 
@@ -51,7 +51,6 @@ mod test {
             let intersection = Intersection::new(3.5, &sphere);
 
             assert_eq!(intersection.t, 3.5);
-            assert_eq!(intersection.shape.id(), &sphere.id);
         }
     }
 
@@ -70,8 +69,6 @@ mod test {
             ));
 
             assert_eq!(xs.len(), 2);
-            assert_eq!(xs[0].shape.id(), &sphere.id);
-            assert_eq!(xs[1].shape.id(), &sphere.id);
         }
     }
 
@@ -152,7 +149,6 @@ mod test {
             ));
 
             assert_eq!(computations.t, 4.0);
-            assert_eq!(computations.shape.id(), &shape.id);
             assert_eq!(computations.point, Point::new(0.0, 0.0, -1.0));
             assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
             assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));
@@ -168,7 +164,6 @@ mod test {
             ));
 
             assert_eq!(computations.t, 1.0);
-            assert_eq!(computations.shape.id(), &shape.id);
             assert_eq!(computations.point, Point::new(0.0, 0.0, 1.0));
             assert_eq!(computations.eye_v, Vector::new(0.0, 0.0, -1.0));
             assert_eq!(computations.normal_v, Vector::new(0.0, 0.0, -1.0));

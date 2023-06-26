@@ -10,3 +10,4 @@ core = { path = "../core" }
 math = { path = "../math" }
 output = { path = "../output" }
 shapes = { path = "../shapes" }
+rayon = "1.5.1"

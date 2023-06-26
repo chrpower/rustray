@@ -3,7 +3,7 @@ use core::{Colour, Point, Vector};
 use shapes::{Material, Shape};
 
 pub fn lighting(
-    shape: &dyn Shape,
+    shape: &Shape,
     material: &Material,
     light: &PointLight,
     point: &Point,

@@ -38,11 +38,9 @@ mod test {
     use core::Colour;
 
     mod creation {
-        use math::Matrix4;
-
-        use crate::pattern::Patn;
-
         use super::*;
+        use crate::pattern::Patn;
+        use math::Matrix4;
 
         #[test]
         fn access() {

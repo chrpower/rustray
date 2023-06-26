@@ -41,9 +41,7 @@ impl Pattern {
                 }
             }
             Patn::Stripes(c1, c2, c3) => {
-                let x = point.x();
-                let fraction = x - x.floor();
-
+                let fraction = point.x() - point.x().floor();
                 if fraction < 1.0 / 3.0 {
                     c1
                 } else if fraction < 2.0 / 3.0 {
@@ -86,7 +84,7 @@ impl Pattern {
         }
     }
 
-    pub fn colour_at_object(&self, shape: &dyn Shape, world_point: &Point) -> Colour {
+    pub fn colour_at_object(&self, shape: &Shape, world_point: &Point) -> Colour {
         let object_point = shape.get_inverse_transform() * world_point;
         let pattern_point = self.world_to_pattern(&object_point);
         self.colour_at(&pattern_point)
